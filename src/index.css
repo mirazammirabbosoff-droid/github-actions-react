@@ -12,3 +12,7 @@ code {
     monospace;
 }
 /* Add your custom styles below this line */
+/* Тест деплоя */
+body {
+  background-color: #282c34;
+}
