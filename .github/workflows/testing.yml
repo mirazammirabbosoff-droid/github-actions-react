@@ -1,17 +1,36 @@
 name: Test React App
-on: push
+
+on:
+  push:
+    branches: [ main ]  # Запуск при пуше в master или main
+  pull_request:
+    branches: [ main ]  # Запуск при создании PR
+
 jobs:
   tests:
-    runs-on: windows-2022
+    runs-on: ubuntu-latest  # Использование Linux (ubuntu) обычно быстрее и дешевле по минутам, чем windows
+
     defaults:
       run:
-        working-directory: ./my-app # Говорим гитхабу выполнять все команды внутри my-app
-    steps:
-      - name: Get repository code
-        uses: actions/checkout@v4 # Обновил до актуальной версии v4
+        working-directory: ./my-app  # Все команды 'run' будут выполняться в этой папке
 
+    steps:
+      # 1. Клонируем репозиторий
+      - name: Get repository code
+        uses: actions/checkout@v4
+
+      # 2. Устанавливаем Node.js (рекомендуется явно указывать версию)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18  # Или укажи версию, которую используешь локально
+          cache: 'npm'      # Кэширование зависимостей для ускорения сборки
+          cache-dependency-path: ./my-app/package-lock.json
+
+      # 3. Чистая установка зависимостей
       - name: Install dependencies
         run: npm ci
 
+      # 4. Запуск тестов
       - name: Test application
-        run: npm run test
+        run: npm run test -- --watchAll=false  # Флаг предотвращает зависание тестов в интерактивном режиме watch
